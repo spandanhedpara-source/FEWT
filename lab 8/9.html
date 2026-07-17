@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Keyboard and Mouse Events</title>
+</head>
+<body>
+  <h2 id="heading">Press a Key</h2>
+  <p id="output"></p>
+
+  <script>
+    const heading = document.getElementById("heading");
+    const output = document.getElementById("output");
+
+    document.addEventListener("keydown", function(event) {
+      const key = event.key.toLowerCase();
+      output.innerHTML = "Key pressed: " + key + " (Code: " + event.keyCode + ")";
+      
+      if (["a","e","i","o","u"].includes(key)) {
+        alert("You pressed a vowel: " + key);
+      }
+    });
+
+    heading.addEventListener("mouseover", function() {
+      heading.style.color = "yellow";
+    });
+
+    heading.addEventListener("mouseout", function() {
+      heading.style.color = "black";
+    });
+  </script>
+</body>
+</html>

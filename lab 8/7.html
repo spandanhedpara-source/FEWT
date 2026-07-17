@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CRUD on Array</title>
+</head>
+<body>
+  <h2>Student List - CRUD Operations</h2>
+
+  <input type="text" id="studentName" placeholder="Enter student name">
+  <button onclick="createStudent()">Add</button>
+  <button onclick="readStudents()">Show</button>
+  <button onclick="updateStudent()">Update</button>
+  <button onclick="deleteStudent()">Delete</button>
+
+  <p id="output"></p>
+
+  <script>
+    let students = [];
+
+    function createStudent() {
+      const name = document.getElementById("studentName").value.trim();
+      if (name !== "") {
+        students.push(name);
+        alert("Student added: " + name);
+        document.getElementById("studentName").value = "";
+      } else {
+        alert("Enter a name");
+      }
+    }
+
+    function readStudents() {
+      document.getElementById("output").innerHTML = 
+        students.length ? students.join(", ") : "No students found";
+    }
+
+    function updateStudent() {
+      const name = document.getElementById("studentName").value.trim();
+      const index = students.indexOf(name);
+      if (index !== -1) {
+        const newName = prompt("Enter new name for " + name + ":");
+        if (newName) {
+          students[index] = newName;
+          alert("Updated successfully");
+        }
+      } else {
+        alert("Student not found");
+      }
+    }
+
+    function deleteStudent() {
+      const name = document.getElementById("studentName").value.trim();
+      const index = students.indexOf(name);
+      if (index !== -1) {
+        students.splice(index, 1);
+        alert("Deleted successfully");
+      } else {
+        alert("Student not found");
+      }
+    }
+  </script>
+</body>
+</html>

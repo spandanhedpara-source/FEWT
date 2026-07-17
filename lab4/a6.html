@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+  let num = prompt("Enter a number (0-999):");
+
+  if (isNaN(num)) {
+    alert("Not a number");
+  } else {
+    num = parseInt(num);
+    if (num < 0 || num > 999) {
+      alert("Out of range");
+    } else {
+      let ones = ["","one","two","three","four","five","six","seven","eight","nine"];
+      let tens = ["","","twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"];
+      let teens = ["ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"];
+
+      let word = "";
+      if (num === 0) word = "zero";
+      else {
+        if (Math.floor(num/100) > 0) {
+          word += ones[Math.floor(num/100)] + " hundred ";
+          num %= 100;
+        }
+        if (num >= 10 && num < 20) {
+          word += teens[num-10];
+        } else {
+          word += tens[Math.floor(num/10)] + " ";
+          word += ones[num%10];
+        }
+      }
+      alert(word.trim());
+    }
+  }
+</script>
+</body>
+</html>

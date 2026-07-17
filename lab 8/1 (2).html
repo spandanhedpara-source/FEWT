@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Random Color</title>
+</head>
+<body id="docbody">
+    <button id="btn">Click Here</button>
+    <script>
+        document.getElementById("btn").onclick = function() {
+            let colors = ["red", "blue", "green", "yellow", "pink", "orange", "purple"];
+            document.getElementById("docbody").style.backgroundColor = 
+                colors[Math.floor(Math.random() * colors.length)];
+        }
+    </script>
+</body>
+</html>

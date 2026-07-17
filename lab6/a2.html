@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Array Functions Demo</title>
+</head>
+<body>
+<script>
+  let array = [1,2,3,4,5,6,7,8,9,10];
+  document.write("Original Array = " + array + "<br>");
+
+  array.push(11);
+  document.write(array.push(11));
+  document.write("<b>push</b> = " + array + "<br>");
+
+  array.pop();
+  document.write("<b>pop</b> = " + array + "<br>");
+
+  array.shift();
+  document.write("<b>shift</b> = " + array + "<br>");
+
+  array.unshift(10);
+  document.write("<b>unshift</b> = " + array + "<br>");
+
+  
+  document.write("<b>splicing</b>  = "+array.splice(4,6) +"<br>")
+  document.write("<b>splice</b> = " + array + "<br>");
+  
+  let slicing = array.slice(2, 6);
+  document.write("<b>slice (2,6)</b> = " + slicing + "<br>");
+  document.write("Array after slice  = " + array + "<br>");
+
+  let arr2 = [2,7,9,5,23,52,3,1];
+  arr2.sort();
+  document.write("<b>sort</b> = " + arr2 + "<br>");
+
+  
+</script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Registration Form</title>
+</head>
+<body>
+  <h2>Student Registration Form</h2>
+  <form id="regForm" onsubmit="return validateForm()">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name"><br><br>
+
+    <label for="email">Email:</label>
+    <input type="text" id="email" name="email"><br><br>
+
+    <label for="age">Age:</label>
+    <input type="number" id="age" name="age"><br><br>
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password"><br><br>
+
+    <label for="confirm">Confirm Password:</label>
+    <input type="password" id="confirm" name="confirm"><br><br>
+
+    <input type="submit" value="Register">
+  </form>
+
+  <script>
+    function validateForm() {
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const age = document.getElementById("age").value.trim();
+      const password = document.getElementById("password").value;
+      const confirm = document.getElementById("confirm").value;
+
+      if (name === "") {
+        alert("Name is required");
+        return false;
+      }
+
+      const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+      if (!email.match(emailPattern)) {
+        alert("Enter a valid email");
+        return false;
+      }
+
+      if (age === "" || age < 18) {
+        alert("Age must be 18 or above");
+        return false;
+      }
+
+      if (password.length < 6) {
+        alert("Password must be at least 6 characters");
+        return false;
+      }
+
+      if (password !== confirm) {
+        alert("Passwords do not match");
+        return false;
+      }
+
+      alert("Registration Successful!");
+      return true;
+    }
+  </script>
+</body>
+</html>

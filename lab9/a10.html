@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Alphanumerical Password</title>
+</head>
+<body>
+    <script>
+        
+        let length = parseInt(prompt("Enter password length (alphanumerical):"));
+
+        let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+        let password = "";
+
+        for (let i = 0; i < length; i++) {
+           
+            let randomIndex = Math.floor(Math.random() * chars.length);
+            password += chars.charAt(randomIndex);
+        }
+
+        document.write("Generated Password: " + password);
+    </script>
+</body>
+</html>

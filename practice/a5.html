@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+  let sentence = prompt("Enter a sentence:");
+  let words = sentence.split(" ");
+  let searchWord = prompt("Enter word to search:");
+
+  let index = -1;
+  for (let i = 0; i < words.length; i++) {
+    if (words[i] === searchWord) {
+      index = i;
+      break;
+    }
+  }
+
+  if (index !== -1) {
+    document.write("Word found at index: " + index);
+  } else {
+    document.write("Word not found.");
+  }
+</script>
+</body>
+</html>

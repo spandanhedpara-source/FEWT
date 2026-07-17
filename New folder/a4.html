@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<body>
+<canvas id="c" width="200" height="200"></canvas>
+<script>
+let ctx=c.getContext("2d"),snake=[{x:100,y:100}],food={x:60,y:60},dx=20,dy=0;
+document.onkeydown=e=>{
+  if(e.key=="ArrowUp")dx=0,dy=-20;
+  if(e.key=="ArrowDown")dx=0,dy=20;
+  if(e.key=="ArrowLeft")dx=-20,dy=0;
+  if(e.key=="ArrowRight")dx=20,dy=0;
+};
+function game(){
+  let h={x:snake[0].x+dx,y:snake[0].y+dy};
+  if(h.x==food.x&&h.y==food.y)food={x:Math.floor(Math.random()*10)*20,y:Math.floor(Math.random()*10)*20};
+  else snake.pop();
+  snake.unshift(h);
+  ctx.clearRect(0,0,200,200);
+  ctx.fillStyle="red";ctx.fillRect(food.x,food.y,20,20);
+  ctx.fillStyle="green";snake.forEach(s=>ctx.fillRect(s.x,s.y,20,20));
+  if(h.x<0||h.y<0||h.x>=200||h.y>=200||snake.slice(1).some(s=>s.x==h.x&&s.y==h.y))
+    return alert("Game Over"),clearInterval(run);
+}
+let run=setInterval(game,200);
+</script>
+</body>
+</html>

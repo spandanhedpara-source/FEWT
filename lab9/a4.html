@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+</head>
+<body>
+    <script>
+        let d = new Date();
+
+        let dayName = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        let monthName = ["January", "February", "March", "April", "May", "June",
+                          "July", "August", "September", "October", "November", "December"];
+
+        let day = dayName[d.getDay()];
+        let month = monthName[d.getMonth()];
+        let date = d.getDate();
+        let year = d.getFullYear();
+        let time = d.toLocaleTimeString();
+        let hours=d.getHours();
+
+        document.write("Current Date: " + date + " " + month + " " + year + "<br>");
+        document.write("Current Day: " + day + "<br>");
+        document.write("Current Time: " + time + "<br>");
+        document.write(hours)
+    </script>
+</body>
+</html>

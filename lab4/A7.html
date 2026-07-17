@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+  let word = prompt("Enter a word:");
+  let first = word.indexOf("a");
+  let last = word.lastIndexOf("a");
+
+  if (first === -1 || last === -1) {
+    document.write("No 'a' found in the word.");
+  } else {
+    let between = word.substring(first+1, last);
+    document.write("First occurrence: " + (first+1) + "<br>");
+    document.write("Last occurrence: " + (last+1) + "<br>");
+    document.write("String between: " + between);
+  }
+</script>
+</body>
+</html>

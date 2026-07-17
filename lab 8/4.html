@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Form Event Recognition</title>
+</head>
+<body>
+  <form id="myForm">
+    <input type="text" name="username" placeholder="Enter username" />
+    <input type="submit" value="Submit" />
+    <input type="reset" value="Reset" />
+  </form>
+
+  <script>
+    const form = document.getElementById("myForm");
+
+    form.addEventListener("submit", function(event) {
+      event.preventDefault();
+      alert("Form event fired: submit");
+    });
+
+    form.addEventListener("reset", function() {
+      alert("Form event fired: reset");
+    });
+
+    form.addEventListener("change", function() {
+      alert("Form event fired: change");
+    });
+
+    form.addEventListener("focusin", function() {
+      alert("Form event fired: focusin");
+    });
+
+    form.addEventListener("focusout", function() {
+      alert("Form event fired: focusout");
+    });
+  </script>
+</body>
+</html>

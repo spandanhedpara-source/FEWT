@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+  let n = parseInt(prompt("Enter size of array:"));
+  let arr = [];
+  for (let i = 0; i < n; i++) {
+    arr[i] = parseInt(prompt("Enter element " + (i+1) + ":"));
+  }
+
+  arr.sort(function(a, b) { return a - b; });
+
+  document.write("Sorted array: " + arr.join(", "));
+</script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Mouse Events</title>
+    <style>
+      #box {
+        width: 200px;
+        height: 100px;
+        background: #3498db;
+        color: white;
+        text-align: center;
+        line-height: 100px;
+        margin: 20px auto;
+        font-size: 18px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="box">Touch Me</div>
+
+    <script>
+
+      document.getElementById("box").addEventListener("click", () => {
+        document.getElementById("box").innerHTML = "1. click";
+      });
+
+      document.getElementById("box").addEventListener("dblclick", () => {
+        document.getElementById("box").innerHTML = "2. dblclick";
+      });
+
+      document.getElementById("box").addEventListener("mousedown", () => {
+        document.getElementById("box").innerHTML = "3. mousedown";
+      });
+
+      document.getElementById("box").addEventListener("mouseup", () => {
+        document.getElementById("box").innerHTML = "4. mouseup";
+      });
+
+      document.getElementById("box").addEventListener("mousemove", () => {
+        document.getElementById("box").innerHTML = "5. mousemove";
+      });
+
+      document.getElementById("box").addEventListener("mouseover", () => {
+        document.getElementById("box").innerHTML = "6. mouseover";
+      });
+
+      document.getElementById("box").addEventListener("mouseout", () => {
+        document.getElementById("box").innerHTML = "7. mouseout";
+      });
+    </script>
+  </body>
+</html>

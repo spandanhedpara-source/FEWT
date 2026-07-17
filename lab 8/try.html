@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Table</title>
+</head>
+<body>
+    <label for="name">Name</label>
+    <input type="text" id="name">
+    <button id="addBtn" onclick="addStudent()">ADD</button>
+
+    <table border="2" cellspacing="0" cellpadding="5"> 
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>NAME</th>
+                <th>ACTION</th>
+            </tr>
+        </thead>
+        <tbody id="tabledata"></tbody>
+    </table>    
+
+    <script>
+        let arr = [];
+        let editIndex = -1;
+
+        function display() {
+            let temp = "";
+            for (let index = 0; index < arr.length; index++) {
+                temp += `<tr>
+                            <td>${index + 1}</td>
+                            <td>${arr[index]}</td>
+                            <td>
+                                <button onclick="editStudent(${index})">Edit</button>
+                                <button onclick="deleteStudent(${index})">Delete</button>
+                            </td>
+                         </tr>`;
+            }
+            document.getElementById("tabledata").innerHTML = temp;
+        }
+
+        function addStudent() {
+            let sname = document.getElementById("name").value.trim();
+            if (sname === "") {
+                alert("Please enter a name");
+                return;
+            }
+
+            if (editIndex == -1) {
+               
+                arr.push(sname);
+            } else {
+                
+                arr[editIndex] = sname;
+                editIndex = -1; 
+                document.getElementById("addBtn").innerText = "ADD";
+            }
+
+            document.getElementById("name").value = "";
+            display();
+        }
+
+        function editStudent(index) {
+            document.getElementById("name").value = arr[index];
+            editIndex = index;
+            document.getElementById("addBtn").innerText = "UPDATE"; 
+        }
+
+        function deleteStudent(index) {
+            arr.splice(index, 1);
+            display();
+        }
+    </script>
+</body>
+</html>
