@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h3>Select Roll Numbers:</h3>
+
+    <input type="checkbox" value="PROF ARJUN BALA" onclick="showSelected()">PROF ARJUN BALA<br>
+    <input type="checkbox" value="PROF PRADHYUMANSINH JADEJA" onclick="showSelected()">PROF PRADHYUMANSINH JADEJA<br>
+    <input type="checkbox" value="PROF DHVANIK ZALA" onclick="showSelected()">PROF DHVANIK ZALA<br>
+    <input type="checkbox" value="PROF DEEP PADALIYA" onclick="showSelected()">PROF DEEP PADALIYA<br>
+
+    <p>Selected Roll Numbers: <span id="output">None</span></p>
+
+    <script>
+        function showSelected() {
+          
+            let checkedBoxes = document.querySelectorAll('input:checked');
+            
+           
+            let selected = [];
+            
+        
+            let i = 0;
+            
+            
+            while (i < checkedBoxes.length) {
+                
+                selected.push(checkedBoxes[i].value);
+                
+                
+                i++; 
+            }
+            
+          
+            document.getElementById("output").innerText = selected.join(", ");
+        }
+    </script>
+</body>
+</html>

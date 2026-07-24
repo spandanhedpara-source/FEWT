@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Attendance Tracker</title>
+    <style>
+        /* --- 1. CSS STYLING --- */
+        :root {
+            --primary: #3b82f6;
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --success: #22c55e;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            border-bottom: 3px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        input,
+        button {
+            padding: 12px;
+            margin: 5px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        button {
+            cursor: pointer;
+            color: white;
+            border: none;
+            font-weight: bold;
+        }
+
+        .btn-blue {
+            background: var(--primary);
+        }
+
+        .btn-green {
+            background: var(--success);
+        }
+
+        .btn-red {
+            background: var(--danger);
+        }
+
+        /* Table Styling */
+        .table-container {
+            max-height: 50vh;
+            overflow-y: auto;
+            margin-top: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #1e293b;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+
+        /* Interactive Elements */
+        .active-row {
+            border: 2px solid var(--primary);
+            background: #e0f2fe;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Summary Popup */
+        #summaryModal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>ATTENDANCE TRACKER</h1>
+
+        <!-- --- 2. SETUP SCREEN --- -->
+        <div id="setup" style="text-align: center;">
+            <p>Enter Roll Number Range (e.g., 101 to 466)</p>
+            <input type="number" id="start" placeholder="Start Roll">
+            <input type="number" id="end" placeholder="End Roll">
+            <button class="btn-blue" onclick="startSession()">Start Session</button>
+        </div>
+
+        <!-- --- 3. MAIN INTERFACE --- -->
+        <div id="main" class="hidden">
+            <div style="text-align: center; margin-bottom: 10px;">
+                <button class="btn-green" onclick="markAll('Present')">All Present</button>
+                <button class="btn-red" onclick="markAll('Absent')">All Absent</button>
+                <button class="btn-blue" onclick="showSummary()">Show Summary</button>
+                <p><i>⌨️ Left Arrow = Present | Right Arrow = Absent</i></p>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Roll</th>
+                            <th>Name</th>
+                            <th>Action</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <p style="text-align: right; font-weight: bold; color: gray; margin-top: 20px;">- SPANDAN HEDPARA</p>
+    </div>
+
+    <!-- --- 4. SUMMARY POPUP --- -->
+    <div id="summaryModal" class="hidden">
+        <div class="modal-content">
+            <h2 style="margin-top:0;">Attendance Summary</h2>
+            <div id="summaryText"></div>
+            <button class="btn-blue" style="width: 100%; margin-top: 15px;"
+                onclick="document.getElementById('summaryModal').classList.add('hidden')">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 5. DATA ---
+        // Contains all students tightly packed
+        const allStudents = [
+            { rol: 101, name: "Chitre Jeet Mehulbhai" }, { rol: 102, name: "Tanvi Mehta" }, { rol: 103, name: "Trivedi Harsh Umangkumar" }, { rol: 104, name: "Vrajrajsinh Gohil" }, { rol: 105, name: "Bhojani Dev Ankitbhai" }, { rol: 106, name: "Jani Shreya Vimal" }, { rol: 107, name: "Chauhan Krushna Sanjaybhai" }, { rol: 108, name: "Palsana Henish Sureshbhai" }, { rol: 109, name: "Thanki Aum Punitbhai" }, { rol: 110, name: "Dattani Pratham Chetan" }, { rol: 111, name: "Dholariya Marth Vinodbhai" }, { rol: 112, name: "Dhruv Dave" }, { rol: 113, name: "Boricha Niyanta Sanjaybhai" }, { rol: 114, name: "Rupareliya Manav Vikasbhai" }, { rol: 115, name: "Godhasara Peryben Rajeshbhai" }, { rol: 116, name: "Veer Turakhia" }, { rol: 117, name: "Kanzariya Utsav Bhagvanjibhai" }, { rol: 118, name: "Kesha Satishbhai Kaneriya" }, { rol: 119, name: "Maheta Kashish Sukeshbhai" }, { rol: 120, name: "Khagram Kruti Nileshbhai" }, { rol: 121, name: "Nandani Pareshkumar Rana" }, { rol: 122, name: "Limbasiya Harsh Hiteshbhai" }, { rol: 123, name: "Sarvaiya Aishwarya Harshadbhai" }, { rol: 124, name: "Rachhadiya Garv Bharatbhai" }, { rol: 125, name: "Dhabaliya Dhairya Amitkumar" }, { rol: 126, name: "Pambhar Nirdip Bhailalbhai" }, { rol: 127, name: "Zaveri Raxit Pareshbhai" }, { rol: 128, name: "Sureliya Ruchita Pankajbhai" }, { rol: 129, name: "Kathrani Rinal Dineshbhai" }, { rol: 130, name: "Madhwani Rutvi Hareshkumar" }, { rol: 131, name: "Sudani Meet Shaileshbhai" }, { rol: 132, name: "Varsani Disha Govindbhai" }, { rol: 133, name: "Prajapati Hetaviben Ganpatbhai" }, { rol: 134, name: "Pandya Aum Bhaveshbhai" }, { rol: 135, name: "Kataria Lipsit Bhavesh" }, { rol: 136, name: "Makwana Dhairya Mayur" }, { rol: 137, name: "Rangani Harsh Amitbhai" }, { rol: 138, name: "Dobariya Jenil Shantibhai" }, { rol: 139, name: "Kothari Uttam Maheshbhai" }, { rol: 140, name: "Naliyapara Mahek Bhaveshbhai" }, { rol: 141, name: "Virani Pujan Hiteshbhai" }, { rol: 142, name: "Deshani Harshil Chandubhai" }, { rol: 143, name: "Rathod Madhav Rohanbhai" }, { rol: 144, name: "Rabadiya Lency Pankajbhai" }, { rol: 145, name: "Dholu Dharmik Ghanshyambhai" }, { rol: 146, name: "Godhani Vishva Kamleshbhai" }, { rol: 147, name: "Ghetiya Khushkumar Niteshbhai" }, { rol: 148, name: "Javia Diya Mehul" }, { rol: 149, name: "Bhanderi Krisha Jitendra" }, { rol: 150, name: "Bosamiya Shriya Jitendrabhai" }, { rol: 151, name: "Zinzuvadiya Urvashi Bharatbhai" }, { rol: 152, name: "Sonagara Abhishek Kishorbhai" }, { rol: 153, name: "Patadia Hetvi Chetan" }, { rol: 154, name: "Banugariya Pushti Vimalbhai" }, { rol: 155, name: "Moral Satvi Ashish" }, { rol: 156, name: "Sodha Dhara Ashokbhai" }, { rol: 157, name: "Dholu Bansiben Kanubhai" }, { rol: 158, name: "Dhyani Hemant Patel" }, { rol: 159, name: "Detroja Velishkumar Dineshbhai" }, { rol: 160, name: "Avlani Neel Naimishbhai" }, { rol: 161, name: "Hedpara Spandan Pankajbhai" }, { rol: 162, name: "Rathod Jill Devendrabhai" }, { rol: 163, name: "Metaliya Jeelkumar Bhaveshbhai" }, { rol: 164, name: "Parmar Khushali Makanbhai" }, { rol: 165, name: "Jarsaniya Vatsal Pradipbhai" }, { rol: 166, name: "Hapaliya Vishvam Hareshbhai" }, { rol: 167, name: "Sojitra Ansh Miteshbhai" }, { rol: 168, name: "Jethwa Pushti Jayeshbhai" }, { rol: 169, name: "Dreamy Jatiya" }, { rol: 170, name: "Ramoliya Tirtha Ashokbhai" }, { rol: 171, name: "Mendapara Keyur Pareshbhai" }, { rol: 172, name: "Valani Dhruvkumar Ishvarbhai" }, { rol: 173, name: "Pandya Jeel Jitendra" }, { rol: 174, name: "Desai Margi Jigneshkumar" }, { rol: 175, name: "Sakhia Dhruva Darshankumar" }, { rol: 176, name: "Thakrar Diya Chiragbhai" }, { rol: 177, name: "Pethad Jainam Vinodbhai" }, { rol: 178, name: "Pandya Heet Vipulbhai" }, { rol: 179, name: "Siddique Shadab Sarfaraz" }, { rol: 180, name: "Kanzariya Janvi Mohanbhai" }, { rol: 181, name: "Amipara Yashkumar Rajeshbhai" }, { rol: 182, name: "Parmar Harsh Kiritbhai" }, { rol: 183, name: "Vaghela Tirthkumar Maheshbhai" }, { rol: 184, name: "Vekariya Khushi Priyeshbhai" }, { rol: 185, name: "Pathar Nisarg Sureshbhai" }, { rol: 186, name: "Adroja Manav Rajeshbhai" }, { rol: 187, name: "Joshi Bhargav Rajeshkumar" }, { rol: 188, name: "Makwana Bhumi Digneshbhai" }, { rol: 189, name: "Depani Hetvi Pareshbhai" }, { rol: 190, name: "Kakkad Shreya Piyushbhai" }, { rol: 191, name: "Rathod Viral Kamaleshbhai" }, { rol: 192, name: "Kasundra Yug Prabhulal" }, { rol: 193, name: "Patel Krisha Chirag" }, { rol: 194, name: "Pansuriya Ayush Rajeshbhai" }, { rol: 195, name: "Rupapara Jeel Kishorbhai" }, { rol: 196, name: "Gojiya Jagdish Bhikhabhai" }, { rol: 197, name: "Gohel Pallavi Dipeshbhai" }, { rol: 198, name: "Bhadja Aumkumar Ajaykumar" }, { rol: 199, name: "Mishwa Shitalbhai Vadaliya" }, { rol: 200, name: "Bhogayata Hemang Rameshbhai" }, { rol: 201, name: "Panchotiya Om Bharatbhai" }, { rol: 202, name: "Gandhi Priyansh" }, { rol: 203, name: "Pathar Mayank Jagdishbhai" }, { rol: 204, name: "Chauhan Viren Kamleshbhai" }, { rol: 205, name: "Vaghela Khushi Kantibhai" }, { rol: 206, name: "Shirvi Khushi Sanjaybhai" }, { rol: 207, name: "Bambhroliya Omkumar Mansukhbhai" }, { rol: 208, name: "Kadivar Alwaz Nijamudin" }, { rol: 209, name: "Gami Rudra Kantilal" }, { rol: 210, name: "Amreliya Prince Ashvinbhai" }, { rol: 211, name: "Dev Bimal Gandha" }, { rol: 212, name: "Patel Preet Chetankumar" }, { rol: 213, name: "Limbasiya Janki Sunilbhai" }, { rol: 214, name: "Hirani Vasu Dipakbhai" }, { rol: 215, name: "Viroja Hit Pankajbhai" }, { rol: 216, name: "Jivani Rajalkumar Bharatbhai" }, { rol: 217, name: "Shah Dhyani Brijeshbhai" }, { rol: 218, name: "Parmar Jayraj Dharmendrabhai" }, { rol: 219, name: "Mungara Harsh Nileshbhai" }, { rol: 220, name: "Sangani Rensee Kishorbhai" }, { rol: 221, name: "Budhdhdev Shreyas Pareshbhai" }, { rol: 222, name: "Kachrola Dharm Maheshbhai" }, { rol: 223, name: "Parasara Mohmmadnakib Najarhushen" }, { rol: 224, name: "Dahisariya Dhairya Bhupendrabhai" }, { rol: 225, name: "Kanzariya Tirth Gopalbhai" }, { rol: 226, name: "Pingalsur Aryan Pravinbhai" }, { rol: 227, name: "Hadavani Dhwaneet Harishbhai" }, { rol: 228, name: "Bhut Dhyey Ketanbhai" }, { rol: 229, name: "Kotak Rudra Kaushikbhai" }, { rol: 230, name: "Marakana Krish Arvindbhai" }, { rol: 231, name: "Busa Yug Anilbhai" }, { rol: 232, name: "Khunt Darsh Nileshbhai" }, { rol: 233, name: "Panchotiya Palak Kirtibhai" }, { rol: 234, name: "Ramani Sandhyaben Jagjivanbhai" }, { rol: 235, name: "Patel Anuj Prakashbhai" }, { rol: 236, name: "Tank Drashti Jigneshbhai" }, { rol: 237, name: "Patel Tapan Vishalkumar" }, { rol: 238, name: "Parmar Kirtan Hiteshbhai" }, { rol: 239, name: "Limbasia Prince Bhagvanjibhai" }, { rol: 240, name: "Vaghasiya Krish Vipulbhai" }, { rol: 241, name: "Jivani Prince Ambaram" }, { rol: 242, name: "Saradava Parth Vinodbhai" }, { rol: 243, name: "Zalavadiya Princy Bhaveshbhai" }, { rol: 244, name: "Chikhaliya Dhruvin Rohitbhai" }, { rol: 245, name: "Vora Himani Rajivbhai" }, { rol: 246, name: "Sumra Nadeem Amajadbhai" }, { rol: 247, name: "Hargovind Detroja" }, { rol: 248, name: "Ahuja Nancy Kailashbhai" }, { rol: 249, name: "Gajjar Divy Alpeshkumar" }, { rol: 250, name: "Gundecha Dhruvi Anilbhai" }, { rol: 251, name: "Vyas Madhav Amitbhai" }, { rol: 252, name: "Undhad Drashti Ghanshyambhai" }, { rol: 253, name: "Agravat Ayushiben Rameshbhai" }, { rol: 254, name: "Hingrajiya Krupali Dineshbhai" }, { rol: 255, name: "Kapuriya Priyansh Rohitbhai" }, { rol: 256, name: "Dosani Aryan Hanifmahmad" }, { rol: 257, name: "Busa Jenish Bhaveshbhai" }, { rol: 258, name: "Ughareja Om Rajeshbhai" }, { rol: 259, name: "Vekariya Drashti Jayeshbhai" }, { rol: 260, name: "Vaghela Meetkumar Jayesh" }, { rol: 261, name: "Kadivar Mohamadsaiful Ismailbhai" }, { rol: 262, name: "Kanpariya Nidhi Dilipbhai" }, { rol: 263, name: "Gondaliya Dhruvisa Devjibhai" }, { rol: 264, name: "Dholariya Palak Lalitbhai" }, { rol: 265, name: "Parmar Priyaba Abhijitsinh" },
+            { rol: 301, name: "Harsora Smeet Vijaybhai" }, { rol: 302, name: "Samanta Prithi Ratan" }, { rol: 303, name: "Bhimani Mansvi Jayeshbhai" }, { rol: 304, name: "Vachhani Varun Priyeshbhai" }, { rol: 305, name: "Upadhyay Urva Nilay" }, { rol: 306, name: "Trambadiya Yashvi Rakeshbhai" }, { rol: 307, name: "Ratadiya Deven Ghanashyambhai" }, { rol: 308, name: "Akshil Jain" }, { rol: 309, name: "Bhatt Suhavi Jigneshbhai" }, { rol: 310, name: "Faldu Vrajkumar Bharatbhai" }, { rol: 311, name: "Dabhi Dhruvi Hirenbhai" }, { rol: 312, name: "Ranpara Jenil Piyushbhai" }, { rol: 313, name: "Dhamsaniya Bhumiben Nileshbhai" }, { rol: 314, name: "Akvaliya Yanshi Raghuraibhai" }, { rol: 315, name: "Katariya Aryan Girdharlal" }, { rol: 316, name: "Patel Divyang Manojbhai" }, { rol: 317, name: "Chapla Priyal Jigneshbhai" }, { rol: 318, name: "Smit Pujara" }, { rol: 319, name: "Diya Barochia" }, { rol: 320, name: "Lipsa Kamalkumar Khant" }, { rol: 321, name: "Raiyani Swasti Rohitbhai" }, { rol: 322, name: "Kalariya Meet Ripulbhai" }, { rol: 323, name: "Padodara Jemi Chandrakantbhai" }, { rol: 324, name: "Viramgama Jensiben Jitendrabhai" }, { rol: 325, name: "Bharwani Khushi Aslam" }, { rol: 326, name: "Boda Hetvi Niteshbhai" }, { rol: 327, name: "Prajapati Rudrakumar Bharatbhai" }, { rol: 328, name: "Champaneri Devanshi Sanjaykumar" }, { rol: 329, name: "Parmar Rivan Chandrakant" }, { rol: 330, name: "Chavda Krupal Hareshbhai" }, { rol: 331, name: "Hargan Viraj Sachin" }, { rol: 332, name: "Sariya Kinjal Hasmukhbhai" }, { rol: 333, name: "Savaliya Darshan Kishorkumar" }, { rol: 334, name: "Faldu Ayushi Arvindbhai" }, { rol: 335, name: "Jain Arya Jigar" }, { rol: 336, name: "Sojitra Pari Devkaran" }, { rol: 337, name: "Jethava Vatsalkumar Shantilal" }, { rol: 338, name: "Manvar Khush Rajeshbhai" }, { rol: 339, name: "Vajani Harshil Kiritbhai" }, { rol: 340, name: "Prajapati Mayuri Nareshkumar" }, { rol: 341, name: "Parmar Dhairya Ashishbhai" }, { rol: 342, name: "Soni Aesha Chiragbhai" }, { rol: 343, name: "Tank Palak Sunilbhai" }, { rol: 344, name: "Jadeja Priyanshiba Dasharathsinh" }, { rol: 345, name: "Rupapara Tirth Manojbhai" }, { rol: 346, name: "Jambukiya Jaydipbhai Dalpatbhai" }, { rol: 347, name: "Korwadiya Priyanshi Hirenbhai" }, { rol: 348, name: "Lakhadhir Krish Shaileshbhai" }, { rol: 349, name: "Rathod Soham Yogeshbhai" }, { rol: 350, name: "Dadhaniya Yash Jayeshbhai" }, { rol: 351, name: "Dharmi Kamleshbhai Sanariya" }, { rol: 352, name: "Vaghela Kashyap Ravibhai" }, { rol: 353, name: "Harshanshu Kalola" }, { rol: 354, name: "Jain Adi Jigar" }, { rol: 355, name: "Borad Rujvi Pareshbhai" }, { rol: 356, name: "Patel Mithil Rajeshbhai" }, { rol: 357, name: "Saresa Meetkumar Anilbhai" }, { rol: 358, name: "Chandarana Sneha Dipeshbhai" }, { rol: 359, name: "Hapaliya Dixit Sanjaybhai" }, { rol: 360, name: "Sanathra Paranjay Pareshbhai" }, { rol: 361, name: "Nathwani Krisha Bhaveshbhai" }, { rol: 362, name: "Gadara Vedanshi Mukeshbhai" }, { rol: 363, name: "Bhadra Prachi Vimal" }, { rol: 364, name: "Tank Vaidehi Chetanbhai" }, { rol: 365, name: "Sarvaliya Devagn Haritbhai" }, { rol: 366, name: "Malaviya Riddhi Ketanbhai" }, { rol: 367, name: "Ajani Jay Kishanbhai" }, { rol: 368, name: "Parsana Rudra Kaushikbhai" }, { rol: 369, name: "Parasara Mohamadasad Zahid" }, { rol: 370, name: "Solia Shreena Mehul" }, { rol: 371, name: "Rana Yogansh Kirankumar" }, { rol: 372, name: "Ramani Kriyanshi Pankajbhai" }, { rol: 373, name: "Naliyapara Prince Amitbhai" }, { rol: 374, name: "Gami Dhruvi Dineshbhai" }, { rol: 375, name: "Bavra Nazim Altabhusen" }, { rol: 376, name: "Mandavia Angel Rahulbhai" }, { rol: 377, name: "Gadher Neel Mukeshbhai" }, { rol: 378, name: "Chauhan Himnish Nirajkumar" }, { rol: 379, name: "Kaneriya Dhruvi Vijaybhai" }, { rol: 380, name: "Maniya Meet Mukeshbhai" }, { rol: 381, name: "Dhatri Varasada" }, { rol: 382, name: "Smit Shah" }, { rol: 383, name: "Chavda Jiya Kalpeshbhai" }, { rol: 384, name: "Chhatrola Harsh Pravinbhai" }, { rol: 385, name: "Dhamsaniya Nivkumar Rasik" }, { rol: 386, name: "Devansh Kalpesh Shah" }, { rol: 387, name: "Bhanderi Yug Niteshbhai" }, { rol: 388, name: "Makwana Dharmesh Shaileshbhai" }, { rol: 389, name: "Thadesar Krisha Anilbhai" }, { rol: 390, name: "Unadkat Meet Dineshbhai" }, { rol: 391, name: "Zala Jayrajsinh Narendrasinh" }, { rol: 392, name: "Desai Dhaval Mayurkumar" }, { rol: 393, name: "Jamvecha Mitansh Sagarbhai" }, { rol: 394, name: "Baldha Priya Vipulbhai" }, { rol: 395, name: "Chandpa Bhargav Hasamukhbhai" }, { rol: 396, name: "Ughareja Dhruvi Hiteshbhai" }, { rol: 397, name: "Varsada Mayur Dineshbhai" }, { rol: 398, name: "Gol Om Sanjaybhai" }, { rol: 399, name: "Gondaliya Prasanna Mukeshbhai" }, { rol: 400, name: "Dadhaniya Het Mitulbhai" }, { rol: 401, name: "Undhad Jenil Rasikbhai" }, { rol: 402, name: "Metaliya Dharmikkumar Pravinbhai" }, { rol: 403, name: "Vadgasiya Krina Harshadbhai" }, { rol: 404, name: "Raj Ashokkumar Aghara" }, { rol: 405, name: "Joshi Miraj Mukeshbhai" }, { rol: 406, name: "Patel Ved Dilipbhai" }, { rol: 407, name: "Bhagiya Nishtha Atulbhai" }, { rol: 408, name: "Vekariya Neel Kishorbhai" }, { rol: 409, name: "Parmar Jaydev Subhashbhai" }, { rol: 410, name: "Rajpara Karan Jitendrabhai" }, { rol: 411, name: "Chavda Jyotiben Manishbhai" }, { rol: 412, name: "Halvadiya Uttam Shaileshbhai" }, { rol: 413, name: "Devganiya Nishtha Laljibhai" }, { rol: 414, name: "Tank Radhekrushna Maheshbhai" }, { rol: 415, name: "Jadav Krunal Mahendrabhai" }, { rol: 416, name: "Joshi Darshan Narotambhai" }, { rol: 417, name: "Jivani Bansikumar Manishbhai" }, { rol: 418, name: "Mehta Harshit Dhananjay" }, { rol: 419, name: "Mathakiya Mohamadsadik Firojbhai" }, { rol: 420, name: "Aghara Lav Narendrakumar" }, { rol: 421, name: "Patel Het Vishnuprasad" }, { rol: 422, name: "Bhalodiya Dhyey Dineshbhai" }, { rol: 423, name: "Vishroliya Priyansh Bhaveshbhai" }, { rol: 424, name: "Vadgama Nikhil Brijesh" }, { rol: 425, name: "Chadamiya Jeel Maheshbhai" }, { rol: 426, name: "Gadhiya Kush Vinodbhai" }, { rol: 427, name: "Hinsu Princekumar Shaileshbhai" }, { rol: 428, name: "Bandi Mohammedtalha Makbulhusen" }, { rol: 429, name: "Hetvi Vora" }, { rol: 430, name: "Popat Samarth Vishal" }, { rol: 431, name: "Chauhan Bhavika Maheshbhai" }, { rol: 432, name: "Pandya Harsh Bhaveshkumar" }, { rol: 433, name: "Kachrola Riya Vasudevbhai" }, { rol: 434, name: "Keshavala Viraj Devabhai" }, { rol: 435, name: "Gajera Prince Prakashbhai" }, { rol: 436, name: "Chauhan Bhumika Ajaybhai" }, { rol: 437, name: "Gotecha Riya Hareshbhai" }, { rol: 438, name: "Parmar Jaykishan Dharmendrabhai" }, { rol: 439, name: "Sarvaiya Jay Kanjibhai" }, { rol: 440, name: "Kakadiya Shyam Mahendrabhai" }, { rol: 441, name: "Jadeja Yograjsinh Khumansinh" }, { rol: 442, name: "Limbasiya Yashvi Dharmeshbhai" }, { rol: 443, name: "Jadeja Devanshiba" }, { rol: 444, name: "Togadiya Kenil Mukeshbhai" }, { rol: 445, name: "Bhatt Shailja Chetankumar" }, { rol: 446, name: "Sanghani Krish Lalitbhai" }, { rol: 447, name: "Badi Tunfisha Shahbudin" }, { rol: 448, name: "Kundaliya Rutvi Mukeshbhai" }, { rol: 449, name: "Ujariya Nikita Ashokbhai" }, { rol: 450, name: "Bhoraniya Mohammadujair Makbul" }, { rol: 451, name: "Vora Kunj Sanjaybhai" }, { rol: 452, name: "Kasundra Shraddha Jagjivanbhai" }, { rol: 453, name: "Janani Unnati Piyush" }, { rol: 454, name: "Pithadiya Riya Bhaveshbhai" }, { rol: 455, name: "Godhaviya Utsav Hareshbhai" }, { rol: 456, name: "Jethva Vishva Rajeshbhai" }, { rol: 457, name: "Sakhiya Tulsi Jayeshbhai" }, { rol: 458, name: "Boda Riyaben Kailashbhai" }, { rol: 459, name: "Dhandhukiya Nemish Nareshbhai" }, { rol: 460, name: "Nanani Shraddha Pareshbhai" }, { rol: 461, name: "Santoki Dhairya Jagdish" }, { rol: 462, name: "Lodariya Tushar Shaileshbhai" }, { rol: 463, name: "Bhimani Rutva Sureshbhai" }, { rol: 464, name: "Gadhia Harsh Ashokbhai" }, { rol: 465, name: "Vora Hir Viththalbhai" }, { rol: 466, name: "Hirpara Bhavy Maheshbhai" }
+        ];
+
+        let activeStudents = [];
+        let currentIndex = 0;
+
+        // --- 6. CORE LOGIC ---
+
+        function startSession() {
+            let start = parseInt(document.getElementById('start').value);
+            let end = parseInt(document.getElementById('end').value);
+
+            // Filter out only the requested students, and attach a blank 'status' property to them
+            activeStudents = allStudents
+                .filter(s => s.rol >= start && s.rol <= end)
+                .map(s => ({ ...s, status: null }));
+
+            if (activeStudents.length === 0) return alert("No students found in range.");
+
+            // Hide Setup, Show Main
+            document.getElementById('setup').classList.add('hidden');
+            document.getElementById('main').classList.remove('hidden');
+
+            renderTable();
+            speak("Session Started");
+        }
+
+        // Re-draws the entire table when a change is made
+        function renderTable() {
+            const tbody = document.getElementById("tbody");
+
+            // Loop through students to create table rows
+            tbody.innerHTML = activeStudents.map((s, index) => {
+
+                // Determine styling based on status
+                let statusBadge = '';
+                if (s.status === 'Present') statusBadge = '<span class="status-badge btn-green">Present</span>';
+                if (s.status === 'Absent') statusBadge = '<span class="status-badge btn-red">Absent</span>';
+
+                // Check if this is the active row being edited
+                let isActive = (index === currentIndex) ? 'active-row' : '';
+
+                return `
+                <tr id="row${index}" class="${isActive}">
+                    <td><strong>${s.rol}</strong></td>
+                    <td>${s.name}</td>
+                    <td>
+                        <button class="btn-green" onclick="mark(${index}, 'Present')">P</button>
+                        <button class="btn-red" onclick="mark(${index}, 'Absent')">A</button>
+                    </td>
+                    <td>${statusBadge}</td>
+                </tr>`;
+            }).join("");
+
+            // Keep the highlighted row in view
+            if (document.getElementById(`row${currentIndex}`)) {
+                document.getElementById(`row${currentIndex}`).scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+        }
+
+        // A single function handles BOTH present and absent assignments
+        function mark(index, status) {
+            activeStudents[index].status = status; // Save status directly into the array
+            speak(`${activeStudents[index].rol} ${status}`); // Speak out loud
+
+            currentIndex = index + 1; // Move down one row
+            renderTable(); // Update the screen
+        }
+
+        // Quickly marks everyone at once
+        function markAll(status) {
+            let originalSpeak = window.speak;
+            window.speak = () => { }; // Temporarily mute to stop it saying 60 names out loud
+
+            activeStudents.forEach((s, index) => mark(index, status)); // Apply to all
+
+            window.speak = originalSpeak; // Unmute
+            speak("All marked " + status);
+        }
+
+        function showSummary() {
+            // Find who is absent/present directly from the main array
+            const absents = activeStudents.filter(s => s.status === 'Absent');
+            const presents = activeStudents.filter(s => s.status === 'Present');
+
+            let html = `<h3>Total Absent: <span style="color:red">${absents.length}</span> | Total Present: <span style="color:green">${presents.length}</span></h3>`;
+
+            if (absents.length > 0) {
+                html += `<ul style="text-align: left">` + absents.map(s => `<li><strong>${s.rol}</strong> - ${s.name}</li>`).join("") + `</ul>`;
+            } else {
+                html += `<p>Everyone is present!</p>`;
+            }
+
+            document.getElementById('summaryText').innerHTML = html;
+            document.getElementById('summaryModal').classList.remove('hidden');
+            speak("Showing summary");
+        }
+
+        // --- 7. HARDWARE INTEGRATION ---
+
+        // Voice Engine
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                let msg = new SpeechSynthesisUtterance(text);
+                msg.rate = 1.3;
+                window.speechSynthesis.speak(msg);
+            }
+        }
+
+        // Keyboard Navigation (Arrow Keys)
+        document.addEventListener('keydown', (event) => {
+            if (activeStudents.length === 0 || currentIndex >= activeStudents.length) return;
+
+            if (event.key === 'ArrowLeft') {
+                event.preventDefault();
+                mark(currentIndex, 'Present');
+            } else if (event.key === 'ArrowRight') {
+                event.preventDefault();
+                mark(currentIndex, 'Absent');
+            }
+        });
+    </script>
+</body>
+
+</html>

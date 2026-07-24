@@ -1,0 +1,31 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!-- //1. Demonstrate how to create a class in Java Script. (A) -->
+    <script>
+        class student{
+            constructor(name,rollno,semester){
+                this.name=name;
+                this.rollno=rollno;
+                this.semester=semester;
+            }
+
+            displaydetails(){
+                console.log(`Name: ${this.name},Rollno: ${this.rollno},semester:${this.semester}`)
+            }
+        }
+        let s1=new student("jeel pandya",173,3)
+        s1.displaydetails();
+        let s2=new student("keyur mendpara",171,3)
+        s2.displaydetails();
+
+    </script>
+</body>
+</html>

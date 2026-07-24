@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Attendance Tracker - Beginner Friendly</title>
+    
+    <!-- Link to Google Fonts for premium typography (Outfit font) -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome icons for button icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ==========================================================================
+           1. CSS VARIABLES (DESIGN SYSTEM)
+           ========================================================================== */
+        :root {
+            --bg-color: #f1f5f9;          /* Light grayish-blue background */
+            --text-main: #0f172a;         /* Dark navy for high-contrast reading */
+            --text-muted: #64748b;        /* Cool gray for secondary details */
+            --color-present: #10b981;     /* Vibrant green for present students */
+            --color-absent: #ef4444;      /* Vibrant red for absent students */
+            --color-unmarked: #94a3b8;    /* Neutral gray for unmarked students */
+            --radius: 12px;               /* Consistent rounded corners */
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
+            --transition: all 0.25s ease-in-out; /* Smooth transition for hover effects */
+        }
+
+        /* ==========================================================================
+           2. BASIC RESET & BASE STYLES
+           ========================================================================== */
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Outfit', sans-serif; /* Clean modern font */
+        }
+        
+        body { 
+            background: var(--bg-color); 
+            color: var(--text-main); 
+            padding: 2rem 1rem; 
+            display: flex; 
+            justify-content: center; 
+        }
+        
+        /* Central layout container limiting page width */
+        .container { 
+            width: 100%; 
+            max-width: 1000px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 1.5rem; 
+        }
+        
+        header { 
+            text-align: center; 
+        }
+        
+        header h1 { 
+            font-size: 2.2rem; 
+            color: #1e3a8a; 
+            margin-bottom: 0.25rem; 
+            font-weight: 700; 
+        }
+        
+        header p { 
+            color: var(--text-muted); 
+            font-size: 1rem; 
+        }
+
+        /* ==========================================================================
+           SETUP PANEL (ROLL NUMBER INPUTS)
+           ========================================================================== */
+        .setup-panel { 
+            background: white; 
+            padding: 1.25rem; 
+            border-radius: var(--radius); 
+            box-shadow: var(--shadow);
+            display: flex; 
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem; 
+            flex-wrap: wrap; 
+        }
+        
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .input-group input {
+            padding: 0.5rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            width: 80px;
+            font-family: inherit;
+            font-size: 1rem;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        .input-group input:focus {
+            border-color: #4f46e5;
+        }
+
+        /* ==========================================================================
+           3. MAIN CONTROLS SECTION
+           ========================================================================== */
+        .control-panel { 
+            background: white; 
+            padding: 1.25rem; 
+            border-radius: var(--radius); 
+            box-shadow: var(--shadow);
+            display: flex; 
+            justify-content: center; 
+            gap: 1rem; 
+            flex-wrap: wrap; 
+        }
+        
+        /* Core styling for standard control buttons */
+        .btn {
+            display: inline-flex; 
+            align-items: center; 
+            gap: 0.5rem; 
+            padding: 0.75rem 1.5rem;
+            font-size: 0.95rem; 
+            font-weight: 600; 
+            color: white; 
+            border: none; 
+            border-radius: 8px;
+            cursor: pointer; 
+            transition: var(--transition);
+        }
+        
+        .btn:hover { 
+            transform: translateY(-2px); 
+            filter: brightness(1.05); /* Boosts colors slightly on hover */
+        }
+        
+        .btn:active { 
+            transform: translateY(0); 
+        }
+        
+        /* Unique button theme coloring */
+        .btn-show { background: #4f46e5; }     /* Indigo */
+        .btn-mark-all { background: #10b981; } /* Green */
+        .btn-reset { background: #ef4444; }    /* Red */
+
+        /* ==========================================================================
+           4. STATISTICS CONTAINER (SHOW ATTENDANCE)
+           ========================================================================== */
+        .stats-container {
+            display: none; 
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+            gap: 1rem;
+            background: white; 
+            padding: 1.25rem; 
+            border-radius: var(--radius); 
+            box-shadow: var(--shadow);
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .stats-container.visible { 
+            display: grid; 
+        }
+        
+        .stat-card {
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 1rem;
+            background: #f8fafc; 
+            border-radius: 8px; 
+            border-left: 4px solid var(--color-unmarked); 
+        }
+        
+        .stat-number { 
+            font-size: 2rem; 
+            font-weight: 700; 
+            margin-bottom: 0.2rem; 
+        }
+        
+        .stat-label { 
+            font-size: 0.8rem; 
+            font-weight: 600; 
+            color: var(--text-muted); 
+            text-transform: uppercase; 
+        }
+        
+        /* Stats card color coding overrides */
+        .stat-present { border-left-color: var(--color-present); }
+        .stat-present .stat-number { color: var(--color-present); }
+        .stat-absent { border-left-color: var(--color-absent); }
+        .stat-absent .stat-number { color: var(--color-absent); }
+        .stat-unmarked { border-left-color: var(--color-unmarked); }
+        .stat-unmarked .stat-number { color: var(--color-unmarked); }
+
+        /* ABSENT NUMBERS SUMMARY SECTION */
+        .absent-summary {
+            grid-column: 1 / -1; /* Spans across all available columns */
+            background: #fef2f2;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            border-left: 4px solid var(--color-absent);
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-start;
+            margin-top: 0.5rem;
+        }
+
+        .absent-summary strong {
+            white-space: nowrap;
+        }
+
+        .absent-summary span {
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        /* ==========================================================================
+           5. STUDENTS GRID & CARD DESIGN
+           ========================================================================== */
+        .students-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 1rem; 
+        }
+        
+        .student-card {
+            background: white; 
+            border-radius: var(--radius); 
+            padding: 1.25rem; 
+            box-shadow: var(--shadow);
+            display: flex; 
+            flex-direction: column; 
+            gap: 1rem; 
+            border: 1px solid transparent; 
+            transition: var(--transition);
+        }
+        
+        .student-card:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08); 
+        }
+        
+        .student-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-start; 
+        }
+        
+        .student-name { 
+            font-size: 1.1rem; 
+            font-weight: 600; 
+            color: var(--text-main); 
+        }
+        
+        .student-roll { 
+            font-size: 0.85rem; 
+            color: var(--text-muted); 
+            margin-top: 0.1rem; 
+        }
+
+        .student-card.marked-present { border-color: rgba(16, 185, 129, 0.3); background: #f0fdf4; }
+        .student-card.marked-absent { border-color: rgba(239, 68, 68, 0.3); background: #fef2f2; }
+
+        .student-card.is-focused {
+            border-color: #3b82f6;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+            transform: translateY(-3px);
+            outline: 2px solid #3b82f6;
+        }
+
+        .status-badge { font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 12px; text-transform: uppercase; }
+        .status-unmarked { background: #e2e8f0; color: #475569; }
+        .status-present { background: #d1fae5; color: #065f46; }
+        .status-absent { background: #fee2e2; color: #991b1b; }
+
+        .card-actions { 
+            display: flex; 
+            gap: 0.5rem; 
+        }
+        
+        .btn-action {
+            flex: 1; 
+            padding: 0.5rem; 
+            font-size: 0.85rem; 
+            font-weight: 600; 
+            border-radius: 6px; 
+            cursor: pointer;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 0.3rem; 
+            transition: var(--transition);
+            background: #f8fafc; 
+            border: 1px solid #e2e8f0; 
+            color: var(--text-muted);
+        }
+        
+        .btn-action-present:hover { background: #d1fae5; color: #065f46; border-color: #a7f3d0; }
+        .btn-action-absent:hover { background: #fee2e2; color: #991b1b; border-color: #fecdd3; }
+        
+        .btn-action-present.active { background: var(--color-present); color: white; border-color: var(--color-present); }
+        .btn-action-absent.active { background: var(--color-absent); color: white; border-color: var(--color-absent); }
+
+        /* ==========================================================================
+           6. RESPONSIVE ANIMATIONS & MEDIA QUERIES
+           ========================================================================== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            .setup-panel, .control-panel { flex-direction: column; }
+            .btn { width: 100%; }
+            .input-group { width: 100%; justify-content: space-between; }
+            .input-group input { width: 50%; }
+            .absent-summary { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- Header -->
+        <header>
+            <h1>Class Attendance Tracker</h1>
+            <p>Interactive student attendance tracker. Simple and beginner friendly.</p>
+        </header>
+
+        <!-- Setup Panel: Define Roll Number Range -->
+        <section class="setup-panel">
+            <div class="input-group">
+                <label for="startRoll">Start Roll No:</label>
+                <input type="number" id="startRoll" value="1" min="1">
+            </div>
+            <div class="input-group">
+                <label for="endRoll">End Roll No:</label>
+                <input type="number" id="endRoll" value="12" min="1">
+            </div>
+            <button id="btnGenerate" class="btn btn-show">
+                <i class="fa-solid fa-users"></i> Generate Class
+            </button>
+        </section>
+
+        <!-- Control Panel -->
+        <section class="control-panel">
+            <button id="btnShowAttendance" class="btn btn-show">
+                <i class="fa-solid fa-chart-simple"></i> Show Attendance
+            </button>
+            <button id="btnMarkAll" class="btn btn-mark-all">
+                <i class="fa-solid fa-check-double"></i> Mark All Present
+            </button>
+            <button id="btnReset" class="btn btn-reset">
+                <i class="fa-solid fa-rotate-right"></i> Reset System
+            </button>
+        </section>
+
+        <!-- Statistics Panel -->
+        <section id="statsContainer" class="stats-container">
+            <div class="stat-card stat-present">
+                <span id="statPresentCount" class="stat-number">0</span>
+                <span class="stat-label">Present</span>
+            </div>
+            <div class="stat-card stat-absent">
+                <span id="statAbsentCount" class="stat-number">0</span>
+                <span class="stat-label">Absent</span>
+            </div>
+            <div class="stat-card stat-unmarked">
+                <span id="statUnmarkedCount" class="stat-number">0</span>
+                <span class="stat-label">Unmarked</span>
+            </div>
+            
+            <!-- NEW: Absent Roll Numbers Summary Box -->
+            <div class="absent-summary">
+                <strong>Absent Roll Nos:</strong> 
+                <span id="absentRollsList">None</span>
+            </div>
+        </section>
+
+        <!-- Students Grid -->
+        <section id="studentsGrid" class="students-grid"></section>
+
+    </div>
+
+    <script>
+        const firstNames = ["James", "Emma", "Liam", "Olivia", "Noah", "Sophia", "Lucas", "Mia", "Oliver", "Evelyn", "Ethan", "Charlotte", "Aiden", "Amelia", "Logan", "Harper", "Mason", "Isabella", "Jack", "Aria"];
+        const lastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Miller", "Davis", "Garcia", "Rodriguez", "Wilson", "Martinez", "Anderson", "Taylor", "Thomas", "Hernandez", "Moore", "Martin", "Jackson", "Thompson", "White"];
+
+        let students = [];
+        let isStatsOpen = false;
+        let focusedStudentIndex = -1;
+
+        const studentsGrid = document.getElementById('studentsGrid');
+        const statsContainer = document.getElementById('statsContainer');
+        
+        const startRollInput = document.getElementById('startRoll');
+        const endRollInput = document.getElementById('endRoll');
+        const btnGenerate = document.getElementById('btnGenerate');
+
+        const btnShowAttendance = document.getElementById('btnShowAttendance');
+        const btnMarkAll = document.getElementById('btnMarkAll');
+        const btnReset = document.getElementById('btnReset');
+
+        const statPresentCount = document.getElementById('statPresentCount');
+        const statAbsentCount = document.getElementById('statAbsentCount');
+        const statUnmarkedCount = document.getElementById('statUnmarkedCount');
+        
+        // NEW Selector for the Absent List
+        const absentRollsList = document.getElementById('absentRollsList');
+
+        function generateClassRange() {
+            const start = parseInt(startRollInput.value) || 1;
+            const end = parseInt(endRollInput.value) || 12;
+
+            if (start > end) {
+                alert("Start Roll No cannot be greater than End Roll No.");
+                return;
+            }
+            
+            const totalStudents = (end - start) + 1;
+            if (totalStudents > 200) {
+                alert("Please keep the range under 200 to ensure smooth performance.");
+                return;
+            }
+
+            students = []; 
+            const usedNames = new Set();
+            
+            for (let i = 0; i < totalStudents; i++) {
+                let fullName;
+                do {
+                    const randomFirst = firstNames[Math.floor(Math.random() * firstNames.length)];
+                    const randomLast = lastNames[Math.floor(Math.random() * lastNames.length)];
+                    fullName = `${randomFirst} ${randomLast}`;
+                } while (usedNames.has(fullName) && usedNames.size < 390);
+                
+                usedNames.add(fullName);
+                
+                students.push({
+                    rollNo: start + i, 
+                    name: fullName,
+                    status: 'Present' // Default all to present based on original code
+                });
+            }
+            
+            focusedStudentIndex = -1;
+            isStatsOpen = false;
+            statsContainer.classList.remove('visible');
+            btnShowAttendance.innerHTML = '<i class="fa-solid fa-chart-simple"></i> Show Attendance';
+            
+            renderStudents();
+        }
+
+        function setFocusedStudent(index) {
+            focusedStudentIndex = index;
+            document.querySelectorAll('.student-card').forEach((card, idx) => {
+                if (idx === index) {
+                    card.classList.add('is-focused');
+                    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } else {
+                    card.classList.remove('is-focused');
+                }
+            });
+        }
+
+        function renderStudents() {
+            studentsGrid.innerHTML = ''; 
+
+            students.forEach((student, index) => {
+                const card = document.createElement('div');
+                card.className = 'student-card';
+                card.id = `student-card-${index}`;
+                card.tabIndex = 0;
+
+                if (student.status === 'Present') {
+                    card.classList.add('marked-present');
+                } else if (student.status === 'Absent') {
+                    card.classList.add('marked-absent');
+                }
+
+                if (index === focusedStudentIndex) {
+                    card.classList.add('is-focused');
+                }
+
+                card.addEventListener('click', () => {
+                    setFocusedStudent(index);
+                });
+
+                let statusClass = 'status-unmarked';
+                if (student.status === 'Present') statusClass = 'status-present';
+                if (student.status === 'Absent') statusClass = 'status-absent';
+
+                card.innerHTML = `
+                    <div class="student-header">
+                        <div class="student-info">
+                            <span class="student-name">${student.name}</span>
+                            <span class="student-roll">Roll No: #${student.rollNo}</span>
+                        </div>
+                        <span class="status-badge ${statusClass}">${student.status}</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn-action btn-action-present ${student.status === 'Present' ? 'active' : ''}" onclick="event.stopPropagation(); markStudent(${index}, 'Present')">
+                            <i class="fa-solid fa-circle-check"></i> Present
+                        </button>
+                        <button class="btn-action btn-action-absent ${student.status === 'Absent' ? 'active' : ''}" onclick="event.stopPropagation(); markStudent(${index}, 'Absent')">
+                            <i class="fa-solid fa-circle-xmark"></i> Absent
+                        </button>
+                    </div>
+                `;
+
+                studentsGrid.appendChild(card);
+            });
+        }
+
+        window.markStudent = function(index, newStatus) {
+            if (students[index].status === newStatus) {
+                students[index].status = 'Unmarked';
+            } else {
+                students[index].status = newStatus;
+            }
+            renderStudents();
+            if (isStatsOpen) {
+                calculateAndShowAttendance();
+            }
+        };
+
+        function calculateAndShowAttendance() {
+            let presentCount = 0;
+            let absentCount = 0;
+            let unmarkedCount = 0;
+            let absentRolls = []; // NEW: Array to keep track of absent roll numbers
+
+            students.forEach(student => {
+                if (student.status === 'Present') {
+                    presentCount++;
+                } else if (student.status === 'Absent') {
+                    absentCount++;
+                    absentRolls.push(student.rollNo); // Add to the array if absent
+                } else {
+                    unmarkedCount++;
+                }
+            });
+
+            statPresentCount.textContent = presentCount;
+            statAbsentCount.textContent = absentCount;
+            statUnmarkedCount.textContent = unmarkedCount;
+            
+            // NEW: Update the absent summary text
+            if (absentRolls.length > 0) {
+                absentRollsList.textContent = absentRolls.join(', ');
+            } else {
+                absentRollsList.textContent = 'None';
+            }
+        }
+
+        btnGenerate.addEventListener('click', generateClassRange);
+
+        btnShowAttendance.addEventListener('click', () => {
+            isStatsOpen = !isStatsOpen;
+
+            if (isStatsOpen) {
+                calculateAndShowAttendance();
+                statsContainer.classList.add('visible');
+                btnShowAttendance.innerHTML = '<i class="fa-solid fa-eye-slash"></i> Hide Attendance';
+            } else {
+                statsContainer.classList.remove('visible');
+                btnShowAttendance.innerHTML = '<i class="fa-solid fa-chart-simple"></i> Show Attendance';
+            }
+        });
+
+        btnMarkAll.addEventListener('click', () => {
+            students.forEach(student => {
+                student.status = 'Present';
+            });
+            renderStudents();
+            if (isStatsOpen) {
+                calculateAndShowAttendance();
+            }
+        });
+
+        btnReset.addEventListener('click', () => {
+            generateClassRange();
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (document.activeElement.tagName === 'INPUT') return;
+
+            if (students.length > 0) {
+                if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    let cols = 1;
+                    const grid = document.getElementById('studentsGrid');
+                    if (grid) {
+                        const computedStyle = window.getComputedStyle(grid);
+                        const gridTemplateColumns = computedStyle.getPropertyValue('grid-template-columns');
+                        cols = gridTemplateColumns.split(' ').length || 1;
+                    }
+
+                    if (focusedStudentIndex === -1) {
+                        focusedStudentIndex = 0;
+                    } else {
+                        if (e.key === 'ArrowLeft') {
+                            focusedStudentIndex = Math.max(0, focusedStudentIndex - 1);
+                        } else if (e.key === 'ArrowRight') {
+                            focusedStudentIndex = Math.min(students.length - 1, focusedStudentIndex + 1);
+                        } else if (e.key === 'ArrowUp') {
+                            focusedStudentIndex = Math.max(0, focusedStudentIndex - cols);
+                        } else if (e.key === 'ArrowDown') {
+                            focusedStudentIndex = Math.min(students.length - 1, focusedStudentIndex + cols);
+                        }
+                    }
+                    setFocusedStudent(focusedStudentIndex);
+                    return;
+                }
+
+                if (e.key === 'Enter') {
+                    if (focusedStudentIndex >= 0 && focusedStudentIndex < students.length) {
+                        e.preventDefault();
+                        const currentStatus = students[focusedStudentIndex].status;
+                        const newStatus = currentStatus === 'Absent' ? 'Present' : 'Absent';
+                        markStudent(focusedStudentIndex, newStatus);
+                    }
+                    return;
+                }
+            }
+        });
+
+        generateClassRange();
+        
+    </script>
+</body>
+</html>

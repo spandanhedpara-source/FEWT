@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Class Attendance</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f8fafc; display: flex; justify-content: center; padding: 20px; }
+        .container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
+        .input-group { display: flex; gap: 8px; margin-bottom: 20px; }
+        input { flex: 1; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; }
+        button { padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .present { background: #dcfce7; color: #166534; }
+        .absent { background: #fee2e2; color: #991b1b; }
+        button:hover { opacity: 0.8; }
+        ul { list-style: none; padding: 0; max-height: 400px; overflow-y: auto; }
+        li { padding: 10px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h3>Attendance (Up to 165)</h3>
+    <div class="input-group">
+        <input type="number" id="rollInput" placeholder="Enter Roll No (101-165)">
+        <button class="present" onclick="mark('Present')">P</button>
+        <button class="absent" onclick="mark('Absent')">A</button>
+    </div>
+    <ul id="list"></ul>
+</div>
+
+<script>
+    // Database containing students up to Roll No 165[cite: 1]
+    const students = {
+        101: "Chitre Jeet Mehulbhai",
+         102: "Tanvi Mehta", 103: "Trivedi Harsh Umangkumar",
+        104: "Vrajrajsinh Gohil", 105: "Bhojani Dev Ankitbhai", 106: "Jani Shreya Vimal",
+        107: "Chauhan Krushna Sanjaybhai", 108: "Palsana Henish Sureshbhai", 109: "Thanki Aum Punitbhai",
+        110: "Dattani Pratham Chetan", 111: "Dholariya Marth Vinodbhai", 112: "Dhruv Dave",
+        113: "Boricha Niyanta Sanjaybhai", 114: "Rupareliya Manav Vikasbhai", 115: "Godhasara Peryben Rajeshbhai",
+        116: "Veer Turakhia", 117: "Kanzariya Utsav Bhagvanjibhai", 118: "Kesha Satishbhai Kaneriya",
+        119: "Maheta Kashish Sukeshbhai", 120: "Khagram Kruti Nileshbhai", 121: "Nandani Pareshkumar Rana",
+        122: "Limbasiya Harsh Hiteshbhai", 123: "Sarvaiya Aishwarya Harshadbhai", 124: "Rachhadiya Garv Bharatbhai",
+        125: "Dhabaliya Dhairya Amitkumar", 126: "Pambhar Nirdip Bhailalbhai", 127: "Zaveri Raxit Pareshbhai",
+        128: "Sureliya Ruchita Pankajbhai", 129: "Kathrani Rinal Dineshbhai", 130: "Madhwani Rutvi Hareshkumar",
+        131: "Sudani Meet Shaileshbhai", 132: "Varsani Disha Govindbhai", 133: "Prajapati Hetaviben Ganpatbhai",
+        134: "Pandya Aum Bhaveshbhai", 135: "Kataria Lipsit Bhavesh", 136: "Makwana Dhairya Mayur",
+        137: "Rangani Harsh Amitbhai", 138: "Dobariya Jenil Shantibhai", 139: "Kothari Uttam Maheshbhai",
+        140: "Naliyapara Mahek Bhaveshbhai", 141: "Virani Pujan Hiteshbhai", 142: "Deshani Harshil Chandubhai",
+        143: "Rathod Madhav Rohanbhai", 144: "Rabadiya Lency Pankajbhai", 145: "Dholu Dharmik Ghanshyambhai",
+        146: "Godhani Vishva Kamleshbhai", 147: "Ghetiya Khushkumar Niteshbhai", 148: "Javia Diya Mehul",
+        149: "Bhanderi Krisha Jitendra", 150: "Bosamiya Shriya Jitendrabhai", 151: "Zinzuvadiya Urvashi Bharatbhai",
+        152: "Sonagara Abhishek Kishorbhai", 153: "Patadia Hetvi Chetan", 154: "Banugariya Pushti Vimalbhai",
+        155: "Moral Satvi Ashish", 156: "Sodha Dhara Ashokbhai", 157: "Dholu Bansiben Kanubhai",
+        158: "Dhyani Hemant Patel", 159: "Detroja Velishkumar Dineshbhai", 160: "Avlani Neel Naimishbhai",
+        161: "Hedpara Spandan Pankajbhai", 162: "Rathod Jill Devendrabhai", 163: "Metaliya Jeelkumar Bhaveshbhai",
+        164: "Parmar Khushali Makanbhai", 165: "Jarsaniya Vatsal Pradipbhai"
+    };
+
+    function mark(status) {
+        const roll = document.getElementById('rollInput').value;
+        const list = document.getElementById('list');
+        if(students[roll]) {
+            const li = document.createElement('li');
+            li.innerHTML = `<span>${roll} - ${students[roll]}</span> <b>${status}</b>`;
+            li.style.color = status === 'Present' ? '#166534' : '#991b1b';
+            list.prepend(li);
+        }
+    }
+</script>
+</body>
+</html>
+
