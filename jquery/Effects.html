@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+ <script src="https://cdn.jsdelivr.net/npm/jquery@4.0.0/dist/jquery.min.js"></script>
+
+ <h1 id="myh1">Hii from Id selector</h1>
+ <h1 class="otherh1">Hii from Class selector</h1>
+ <h1>Nothing here too</h1>
+
+ <button id="mybtn">Toggle</button>
+ <button id="mybtn2">Show</button>
+
+ <script>
+   $("#mybtn").click(()=>{
+       $("#myh1").toggle(); 
+   });
+
+   $("#mybtn2").click(()=>{
+       $("#myh1").fadeToggle(1000);   
+       alert("Kem cho Kalejaao")
+   });
+ </script>
+</body>
+</html>

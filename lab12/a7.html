@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <div id="myDiv">
+  <p>Child 1</p>
+  <p>Child 2</p>
+</div>
+<button id="color">Change Color</button>
+
+<script>
+$("#color").click(function(){
+  $("#myDiv").children().css("background","red");
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <form id="studentForm">
+  Name: <input type="text" id="sname"><br><br>
+  Email: <input type="email" id="semail"><br><br>
+  Mobile: <input type="text" id="smobile"><br><br>
+  <button type="submit">Register</button>
+</form>
+
+<script>
+  $('#studentForm').submit(function(e) {
+    var name = $('#sname').val();
+    var email = $('#semail').val();
+    var mobile = $('#smobile').val();
+    
+   
+    if(name == '' || email == '' || mobile == '') {
+      alert("Please fill out all the fields first!");
+      e.preventDefault(); 
+      return false;
+    }
+    
+    
+    if(mobile.length != 10) {
+      alert("Mobile number must be 10 digits.");
+      e.preventDefault(); 
+      return false;
+    }
+    
+   
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+ <script src="https://cdn.jsdelivr.net/npm/jquery@4.0.0/dist/jquery.min.js"></script>
+
+ <h1 id="myh1">Hii from Id selector</h1>
+ <h1 class="otherh1">Hii from Class selector</h1>
+ <h1>Nothing here too</h1>
+ <input type="text" id="mytxt"> 
+ <div class="mydiv"> Hello <span>From Spandan Hedpara </span>  </div>
+
+ <button id="mybtn">Toggle</button>
+ <button id="mybtn2">Show</button>
+
+ <ul id="myul">
+    <li>Rajkot</li>
+    <li>Junagadh</li>
+    <li>Singapore</li>
+
+
+ </ul>
+
+ <script>
+   $("#mybtn").click(()=>{
+     console.log($(".mydiv").val())
+   });
+
+   $("#mybtn2").click(()=>{
+       $("#myh1").fadeToggle(1000);   
+       alert("Kem cho Kalejaao")
+   });
+     $("#mybtn").click(()=>{
+    
+    $("#myul").append("<li>"+$("#mytxt").val()+"</li>");
+   });
+ </script>
+</body>
+</html>

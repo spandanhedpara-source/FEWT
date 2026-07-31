@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <input type="text" id="enrollment" placeholder="Enter Enrollment No">
+<span id="enrollError" style="color:red; display:none;">Invalid Enrollment No</span>
+
+<script>
+  $('#enrollment').blur(function() {
+    var val = $(this).val();
+    
+    var pattern = /^[0-9]{12}$/; 
+    
+    if(!pattern.test(val)) {
+      $('#enrollError').show();
+    } else {
+      $('#enrollError').hide();
+    }
+  });
+</script>
+</body>
+</html>

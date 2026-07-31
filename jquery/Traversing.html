@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+ <script src="https://cdn.jsdelivr.net/npm/jquery@4.0.0/dist/jquery.min.js"></script>
+
+ <div>
+    <span class="def">This is Jquery</span>
+<ul id="myul">
+    <li class="def">Rajkot</li>
+    <li class="def">Junagadh</li>
+    <li id="myLI">Singapore</li>
+    <li class="def">Dubai</li>
+    <li class="def">India</li>
+    <li class="def">America</li>
+
+
+ </ul>
+ </div>'
+ '
+ 
+
+ <script>
+   $(document).ready(()=>{
+     console.log($("#myLI").parents());
+      console.log($("#myLI").parentsUntil());
+       console.log($("#myLI").siblings());
+        console.log($("#myLI").nextAll())
+
+        console.log($("#def").filter("span"))
+   });
+
+   
+ </script>
+</body>
+</html>

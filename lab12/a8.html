@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <div>
+  <p>Sibling 1</p>
+  <button id="btn8">Hide My Siblings</button>
+  <p>Sibling 2</p>
+</div>
+
+<script>
+  $('#btn8').click(function() {
+    $(this).siblings().hide();
+  });
+</script>
+</body>
+</html>
